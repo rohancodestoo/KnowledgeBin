@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+
+  .font-heading {
+    font-family: 'Outfit', sans-serif;
+  }
+
+  /* Fade Up Animation */
+  @keyframes fadeSlideUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-up {
+    animation: fadeSlideUp 1s ease-out forwards;
+    opacity: 0;
+  }
+
+  .delay-100 {
+    animation-delay: 0.1s;
+  }
+
+  .delay-300 {
+    animation-delay: 0.3s;
+  }
+</style>
+
+<div class="bg-background min-h-screen relative overflow-hidden font-heading flex flex-col justify-between">
+  <!-- Top Navigation Header -->
+  <header class="relative z-20 flex items-center justify-between px-6 py-4 max-w-6xl w-full mx-auto">
+    <div class="flex items-center gap-2 font-bold text-xl text-foreground">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+      </svg>
+      KnowledgeBin
+    </div>
+    <div class="flex items-center gap-4">
+      {% if user.is_authenticated %}
+      <a href="{% url 'dashboard' %}" class="text-sm font-medium text-foreground hover:text-accent transition-colors">Dashboard</a>
+      <a href="{% url 'logout' %}" class="text-sm text-muted hover:text-red-500 transition-colors">Logout</a>
+      {% else %}
+      <a href="{% url 'login' %}" class="text-sm font-medium text-muted hover:text-foreground transition-colors">Sign In</a>
+      <a href="{% url 'signup' %}" class="text-sm font-medium bg-foreground text-background px-4 py-2 rounded-full hover:opacity-90 transition-opacity">Sign Up</a>
+      {% endif %}
+    </div>
+  </header>
+
+  <!-- decorative blobs -->
+  <div
+    class="absolute top-0 left-0 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob dark:opacity-20">
+  </div>
+  <div
+    class="absolute top-0 right-0 w-96 h-96 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000 dark:bg-blue-900 dark:opacity-20">
+  </div>
+  <div
+    class="absolute -bottom-32 left-20 w-96 h-96 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000 dark:bg-green-900 dark:opacity-20">
+  </div>
+
+  <div class="my-auto w-full max-w-5xl px-4 z-10 mx-auto">
+
+    <div class="text-center space-y-8">
+      <h1 class="font-bold text-6xl md:text-8xl text-foreground tracking-tight animate-fade-up">
+        KnowledgeBin
+      </h1>
+
+      <div class="h-12 md:h-16 relative overflow-hidden">
+        <p id="rotating-text"
+          class="text-2xl md:text-3xl text-muted font-light absolute w-full transition-all duration-500 transform translate-y-0 opacity-100">
+          Supercharged Productivity.
+        </p>
+      </div>
+
+      <div class="animate-fade-up delay-300 pt-4">
+        <a href="{% url 'dashboard' %}"
+          class="inline-flex items-center px-8 py-4 text-lg font-semibold text-white transition-all duration-200 bg-foreground rounded-full hover:opacity-90 hover:shadow-lg hover:-translate-y-1 focus:outline-none ring-offset-2 ring-foreground">
+          Get Started
+          <svg class="w-5 h-5 ml-2 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const phrases = [
+      "Supercharged Productivity.",
+      "Infinite Memory.",
+      "Seamless Organization."
+    ];
+    let phraseIndex = 0;
+    const textEl = document.getElementById('rotating-text');
+
+    setInterval(() => {
+      // Fade out/slide up
+      textEl.style.opacity = '0';
+      textEl.style.transform = 'translateY(-20px)';
+
+      setTimeout(() => {
+        phraseIndex = (phraseIndex + 1) % phrases.length;
+        textEl.innerText = phrases[phraseIndex];
+        // Reset position below for slide up enter
+        textEl.style.transform = 'translateY(20px)';
+
+        // Force reflow
+        void textEl.offsetWidth;
+
+        // Slide in
+        textEl.style.opacity = '1';
+        textEl.style.transform = 'translateY(0)';
+      }, 500); // Wait for fade out
+    }, 3000);
+  </script>
+
+  {% endblock %}

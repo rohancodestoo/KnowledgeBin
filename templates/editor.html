@@ -1,0 +1,848 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="min-h-screen p-8 transition-colors duration-300">
+    <div class="max-w-4xl mx-auto">
+        <!-- Top Navigation Bar -->
+        <div
+            class="border shadow-xl border-border bg-surface rounded-lg p-4 flex items-center transition-colors duration-300">
+            <a href="{% url 'dashboard' %}"
+                class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-accent text-white hover:opacity-90 h-9 px-3">
+                Back
+            </a>
+            <div class="w-3"></div>
+            <span class="font-semibold text-foreground">{{ user.username }}</span>
+            <span class="inline-block mx-1 text-muted">/</span>
+            <span class="text-muted font-semibold">{{ note.title }}</span>
+            <div class="flex items-center gap-2 ml-4 border-l pl-4 border-border">
+                <!-- Export Dropdown -->
+                <div class="relative inline-block text-left">
+                    <button onclick="toggleExportDropdown()"
+                        class="p-2 text-muted hover:text-foreground hover:bg-background rounded-full transition-colors"
+                        title="Export">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                    </button>
+                    <div id="exportDropdown"
+                        class="hidden absolute right-0 mt-2 w-32 rounded-md shadow-lg bg-surface border border-border z-20 overflow-hidden">
+                        <button onclick="exportPDF()"
+                            class="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-background transition-colors flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <path d="M16 13H8" />
+                                <path d="M16 17H8" />
+                                <path d="M10 9H8" />
+                            </svg> PDF
+                        </button>
+                        <button onclick="exportTXT()"
+                            class="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-background transition-colors flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="16" y1="13" x2="8" y2="13" />
+                                <line x1="16" y1="17" x2="8" y2="17" />
+                                <polyline points="10 9 9 9 8 9" />
+                            </svg> TXT
+                        </button>
+                    </div>
+                </div>
+
+                <div class="relative inline-block text-left">
+                    <button onclick="toggleThemeDropdown()"
+                        class="p-2 text-muted hover:text-foreground hover:bg-background rounded-full transition-colors"
+                        title="Change Theme">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                    </button>
+                    <div id="themeDropdown"
+                        class="hidden absolute right-0 mt-2 w-32 rounded-md shadow-lg bg-surface border border-border ring-1 ring-black ring-opacity-5 z-20 overflow-hidden">
+                        <button onclick="setTheme('light')"
+                            class="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-background transition-colors">Light</button>
+                        <button onclick="setTheme('dark')"
+                            class="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-background transition-colors">Dark</button>
+                        <button onclick="setTheme('midnight')"
+                            class="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-background transition-colors">Midnight</button>
+                        <button onclick="setTheme('sepia')"
+                            class="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-background transition-colors">Sepia</button>
+                    </div>
+                </div>
+
+                <!-- Delete Note Button -->
+                <button id="deleteNoteBtn"
+                    class="p-2 text-muted hover:text-red-500 hover:bg-background rounded-full transition-colors"
+                    title="Delete Note">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6h18" />
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                    </svg>
+                </button>
+            </div>
+            <div class="h-6 w-px bg-border mx-2"></div>
+
+            <div id="saveContainer" class="flex items-center gap-2">
+                <svg id="saveSpinner" class="hidden animate-spin h-3 w-3 text-muted" xmlns="http://www.w3.org/2000/svg"
+                    fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                    </circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                </svg>
+                <span id="saveStatus" class="text-xs text-muted font-medium w-16 text-center">Saved</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="h-4"></div>
+
+    <!-- Editor Container -->
+    <div
+        class="border-border shadow-xl border bg-surface rounded-lg px-16 py-8 w-full min-h-[500px] transition-colors duration-300">
+
+        <h1 class="text-4xl font-bold mb-4 text-foreground">{{ note.title }}</h1>
+        <div id="tags-container" class="flex flex-wrap mb-6">
+            <!-- Tags will be injected here -->
+        </div>
+
+        <!-- Tiptap Menu Bar -->
+        <div id="menubar" class="flex flex-wrap gap-2 mb-4 p-2 border-b border-border">
+            <!-- AI Dropdown -->
+            <div class="relative inline-block text-left">
+                <button id="aiDropdownBtn" onclick="toggleAiDropdown()"
+                    class="menu-btn flex items-center gap-1 text-accent hover:bg-background font-medium"
+                    title="AI Assistant">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a10 10 0 1 0 10 10H12V2z" />
+                        <path d="M12 12 2.1 12.1" />
+                        <path d="M2.1 11.9A10 10 0 0 1 12 2" />
+                    </svg>
+                    Ask AI
+                </button>
+                <!-- Dropdown Menu -->
+                <div id="aiDropdownMenu"
+                    class="hidden absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-surface border border-border focus:outline-none z-10 transition-all">
+                    <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                        <button onclick="triggerAiSummarize()"
+                            class="w-full text-left block px-4 py-2 text-sm text-foreground hover:bg-background"
+                            role="menuitem">Summarize Note</button>
+                        <button onclick="triggerAiTags()"
+                            class="w-full text-left block px-4 py-2 text-sm text-foreground hover:bg-background"
+                            role="menuitem">Suggest Tags</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Autocomplete Toggle -->
+            <div class="flex items-center gap-2 ml-2 border-l pl-2 border-border">
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="aiToggle" class="sr-only peer">
+                    <div
+                        class="w-9 h-5 bg-muted/30 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-accent">
+                    </div>
+                    <span class="ml-2 text-sm font-medium text-muted">AI Auto</span>
+                </label>
+            </div>
+
+
+
+
+
+            <div class="w-px h-6 bg-border mx-1 self-center"></div>
+
+
+
+            <div class="w-px h-6 bg-border mx-1 self-center"></div>
+
+            <button class="menu-btn" data-command="toggleBold" title="Bold">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path>
+                    <path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path>
+                </svg>
+            </button>
+            <button class="menu-btn" data-command="toggleItalic" title="Italic">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="4" x2="10" y2="4"></line>
+                    <line x1="14" y1="20" x2="5" y2="20"></line>
+                    <line x1="15" y1="4" x2="9" y2="20"></line>
+                </svg>
+            </button>
+            <button class="menu-btn" data-command="toggleUnderline" title="Underline">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3" />
+                    <line x1="4" y1="21" x2="20" y2="21" />
+                </svg>
+            </button>
+            <button class="menu-btn" data-command="toggleHighlight" title="Highlight">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m9 11-6 6v3h9l3-3" />
+                    <path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4" />
+                </svg>
+            </button>
+
+            <button class="menu-btn" data-command="toggleHeading" data-level="1" title="H1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 12h8" />
+                    <path d="M4 18V6" />
+                    <path d="M12 18V6" />
+                    <path d="m17 12 3-2v8" />
+                </svg>
+            </button>
+            <button class="menu-btn" data-command="toggleHeading" data-level="2" title="H2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 12h8" />
+                    <path d="M4 18V6" />
+                    <path d="M12 18V6" />
+                    <path d="M21 18h-4c0-4 4-3 4-6 0-1.5-2-2.5-4-1" />
+                </svg>
+            </button>
+            <div class="w-px h-6 bg-border mx-1 self-center"></div>
+            <button class="menu-btn" data-command="toggleBulletList" title="Bullet List">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+            </button>
+            <button class="menu-btn" data-command="toggleOrderedList" title="Ordered List">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="10" y1="6" x2="21" y2="6"></line>
+                    <line x1="10" y1="12" x2="21" y2="12"></line>
+                    <line x1="10" y1="18" x2="21" y2="18"></line>
+                    <path d="M4 6h1v4"></path>
+                    <path d="M4 10h2"></path>
+                    <path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"></path>
+                </svg>
+            </button>
+            <button class="menu-btn" data-command="toggleBlockquote" title="Quote">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />
+                    <path
+                        d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />
+                </svg>
+            </button>
+            <div class="w-px h-6 bg-border mx-1 self-center"></div>
+            <button class="menu-btn" data-command="undo" title="Undo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 7v6h6" />
+                    <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13" />
+                </svg>
+            </button>
+            <button class="menu-btn" data-command="redo" title="Redo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 7v6h-6" />
+                    <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Tiptap Editor Target -->
+        <div id="tiptap-editor" class="prose w-full focus:outline-none max-w-none text-foreground"></div>
+    </div>
+
+    <div class="h-4"></div>
+    <!-- Tip removed -->
+</div>
+</div>
+
+<style>
+    /* Editor Styles to match TipTap */
+    .ProseMirror {
+        outline: none;
+        min-height: 300px;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .ProseMirror p.is-editor-empty:first-child::before {
+        color: #adb5bd;
+        content: attr(data-placeholder);
+        float: left;
+        height: 0;
+        pointer-events: none;
+    }
+
+    /* Task Lists */
+    ul[data-type="taskList"] {
+        list-style: none;
+        padding: 0;
+    }
+
+    li[data-type="taskItem"] {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        margin-bottom: 0.5rem;
+    }
+
+    li[data-type="taskItem"] label {
+        margin-right: 0.5rem;
+        user-select: none;
+        margin-top: 0.2rem;
+    }
+
+    li[data-type="taskItem"] div {
+        flex: 1;
+    }
+
+    /* Menu Button Styles */
+    .menu-btn {
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+        color: var(--text-secondary);
+        transition: all 0.2s;
+    }
+
+    .menu-btn:hover {
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+    }
+
+    .menu-btn.is-active {
+        background-color: var(--border-color);
+        color: var(--text-primary);
+    }
+
+    /* Blockquote Styling */
+    .ProseMirror blockquote {
+        border-left: 4px solid var(--border-color);
+        padding-left: 1rem;
+        margin-left: 0;
+        margin-right: 0;
+        font-style: italic;
+        color: var(--text-secondary);
+        background: var(--bg-secondary);
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-radius: 0 0.5rem 0.5rem 0;
+    }
+</style>
+
+<!-- Data Blocks -->
+{{ tags_data|json_script:"note-tags-data" }}
+{{ note.content|json_script:"note-content-data" }}
+
+<script type="module">
+    import { Editor, Mark, mergeAttributes } from 'https://esm.sh/@tiptap/core';
+    import StarterKit from 'https://esm.sh/@tiptap/starter-kit';
+    import Placeholder from 'https://esm.sh/@tiptap/extension-placeholder';
+    import TaskList from 'https://esm.sh/@tiptap/extension-task-list';
+    import TaskItem from 'https://esm.sh/@tiptap/extension-task-item';
+    import Underline from 'https://esm.sh/@tiptap/extension-underline';
+    import Highlight from 'https://esm.sh/@tiptap/extension-highlight';
+
+    // Define Ghost Text Mark
+    const GhostMark = Mark.create({
+        name: 'ghost',
+        renderHTML({ HTMLAttributes }) {
+            return ['span', mergeAttributes(HTMLAttributes, { class: 'text-muted opacity-50' }), 0]
+        },
+        parseHTML() {
+            return [{ tag: 'span.text-muted.opacity-50' }]
+        }
+    });
+
+    let editor;
+    const saveStatus = document.getElementById('saveStatus');
+    const aiDropdownBtn = document.getElementById('aiDropdownBtn');
+    const aiDropdownMenu = document.getElementById('aiDropdownMenu');
+    const aiToggle = document.getElementById('aiToggle');
+    let saveTimeout;
+    let aiTimeout;
+    let isAiGenerating = false;
+    let ghostRange = null; // Track ghost text position {from, to}
+
+    // ... (AI Functions omitted for brevity, keeping existing) ...
+
+    // --- AI Completion Function ---
+    async function triggerAiCompletion(editor, silent = false) {
+        if (isAiGenerating) return;
+
+        const text = editor.getText();
+        const words = text.split(/\s+/).slice(-100).join(" ");
+
+        if (words.length < 5) return;
+
+        isAiGenerating = true;
+        if (!silent) {
+            saveStatus.innerText = "AI writing...";
+            saveStatus.classList.add("text-accent", "animate-pulse");
+        }
+
+        try {
+            const res = await fetch("{% url 'ai_completion' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ prompt: words })
+            });
+
+            const data = await res.json();
+            if (data.completion) {
+                // Determine completion text
+                const currentText = editor.getText();
+                let completion = data.completion;
+                if (!currentText.endsWith(' ') && !completion.startsWith(' ')) {
+                    completion = ' ' + completion;
+                }
+
+                // Insert as ghost text
+                const startPos = editor.state.selection.from;
+
+                // We use command to insert content with mark, but we need to ensure it doesn't replace selection if any?
+                // Assuming cursor at end or normal typing position.
+
+                editor.chain()
+                    .insertContent({
+                        type: 'text',
+                        text: completion,
+                        marks: [{ type: 'ghost' }]
+                    })
+                    .setTextSelection(startPos) // Move cursor back to start of ghost text
+                    .run();
+
+                // Calculate where the ghost text is
+                ghostRange = {
+                    from: startPos,
+                    to: startPos + completion.length
+                };
+
+                // No typeWriter anymore
+
+            }
+        } catch (e) {
+            console.error("AI Error:", e);
+        } finally {
+            isAiGenerating = false;
+            saveStatus.innerText = "Saved";
+            saveStatus.classList.remove("text-accent", "animate-pulse");
+        }
+    }
+
+
+    // --- AI Summarization ---
+    window.triggerAiSummarize = async function () {
+        const text = editor.getText();
+        if (text.length < 20) {
+            alert("Please write more content first.");
+            return;
+        }
+
+        saveStatus.innerText = "Summarizing...";
+        saveStatus.classList.add("text-purple-600", "animate-pulse");
+
+        try {
+            const res = await fetch("{% url 'ai_summarize' %}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: JSON.stringify({ content: text })
+            });
+            const data = await res.json();
+            if (data.summary && !data.summary.startsWith("Error")) {
+                editor.commands.focus('start');
+                editor.commands.insertContent(`<div class="bg-purple-50 p-4 rounded-lg my-4 border-l-4 border-purple-500"><strong>✨ AI Summary:</strong> ${data.summary}</div><p></p>`);
+            } else if (data.summary && data.summary.startsWith("Error")) {
+                alert("Summary failed: " + data.summary);
+            } else {
+                alert("Summary failed.");
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Summary failed to executing request.");
+        }
+        finally {
+            saveStatus.innerText = "Saved";
+            saveStatus.classList.remove("text-purple-600", "animate-pulse");
+            toggleAiDropdown();
+        }
+    }
+
+    // --- AI Tags ---
+    window.triggerAiTags = async function () {
+        const text = editor.getText();
+        if (text.length < 20) {
+            alert("Please write more content first.");
+            return;
+        }
+        saveStatus.innerText = "Finding Tags...";
+        saveStatus.classList.add("text-purple-600", "animate-pulse");
+
+        try {
+            const res = await fetch("{% url 'ai_auto_tag' %}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: JSON.stringify({ content: text, note_id: "{{ note.id }}" })
+            });
+            const data = await res.json();
+            if (data.tags && data.tags.length > 0) {
+                for (let tag of data.tags) {
+                    await addTag(tag);
+                }
+            }
+        } catch (e) { console.error(e); }
+        finally {
+            saveStatus.innerText = "Saved";
+            saveStatus.classList.remove("text-purple-600", "animate-pulse");
+            toggleAiDropdown();
+        }
+    }
+
+    // --- Tag Logic ---
+    async function addTag(tagName) {
+        try {
+            const res = await fetch("{% url 'add_tag' %}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: JSON.stringify({ note_id: "{{ note.id }}", tag_name: tagName })
+            });
+            const data = await res.json();
+            if (data.success) {
+                renderTag(data.tag);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function renderTag(tag) {
+        const container = document.getElementById('tags-container');
+        if (!container || document.querySelector(`[data-tag-id="${tag.id}"]`)) return;
+
+        const el = document.createElement('span');
+        el.className = "inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-background text-foreground border border-border mr-2 mb-2";
+        el.dataset.tagId = tag.id;
+
+        const label = document.createElement('span');
+        label.textContent = `#${tag.name}`;
+        el.appendChild(label);
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = "ml-1 text-gray-400 hover:text-red-500 font-bold focus:outline-none";
+        btn.innerHTML = "&times;";
+        btn.title = `Remove tag #${tag.name}`;
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            removeTag(tag.id, tag.name);
+        });
+        el.appendChild(btn);
+
+        container.appendChild(el);
+    }
+
+    window.removeTag = async function (tagId, tagName) {
+        if (!confirm(`Remove tag #${tagName}?`)) return;
+        try {
+            const res = await fetch("{% url 'remove_tag' %}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: JSON.stringify({ note_id: "{{ note.id }}", tag_id: tagId, tag_name: tagName })
+            });
+            if (res.ok) {
+                const el = document.querySelector(`[data-tag-id="${tagId}"]`);
+                if (el) el.remove();
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    // --- Dropdown Logic ---
+    window.toggleAiDropdown = function () {
+        aiDropdownMenu.classList.toggle('hidden');
+    }
+
+    window.toggleThemeDropdown = function () {
+        document.getElementById('themeDropdown').classList.toggle('hidden');
+    }
+
+    // Event listener for dropdowns moved to end of script for unified handling
+
+
+    // --- Save Function ---
+    async function saveContent(htmlContent) {
+        // ... (keeping existing save logic)
+        const spinner = document.getElementById('saveSpinner');
+        saveStatus.innerText = "Saving...";
+        saveStatus.classList.add("text-stone-500");
+        spinner.classList.remove('hidden');
+
+        try {
+            const res = await fetch("{% url 'save_note' note.id %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ content: htmlContent })
+            });
+            if (res.ok) {
+                setTimeout(() => {
+                    saveStatus.innerText = "Saved";
+                    saveStatus.classList.remove("text-stone-500");
+                    spinner.classList.add('hidden');
+                }, 500);
+            } else {
+                saveStatus.innerText = "Error";
+                spinner.classList.add('hidden');
+            }
+        } catch (e) {
+            console.error("Save error:", e);
+            saveStatus.innerText = "Error";
+            spinner.classList.add('hidden');
+        }
+    }
+
+    // --- Initialize Editor with Tasks ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const initialContent = JSON.parse(document.getElementById('note-content-data').textContent) || '';
+
+        editor = new Editor({
+            element: document.querySelector('#tiptap-editor'),
+            extensions: [
+                StarterKit,
+                Placeholder.configure({
+                    placeholder: "Write something amazing...",
+                }),
+                TaskList,
+                TaskItem.configure({
+                    nested: true,
+                }),
+                Underline,
+                Highlight.configure({ multicolor: true }),
+                GhostMark,
+            ],
+            content: initialContent,
+            onUpdate: ({ editor, transaction }) => {
+                clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(() => {
+                    const html = editor.getHTML();
+                    // Don't save if it contains ghost text to avoid saving suggestions? 
+                    // Actually, if we use a Mark, it *will* be saved in HTML. 
+                    // This is a trade-off. We might want to strip it before save or accept that draft notes might have suggestions.
+                    // For now, let's just save it.
+                    saveContent(html);
+                }, 800);
+                updateMenuBar(editor);
+
+                // Auto AI Logic
+                if (aiToggle && aiToggle.checked && !isAiGenerating && !ghostRange) {
+                    // Check if ghost text already exists?
+                    // Only trigger if no ghost text currently
+                    clearTimeout(aiTimeout);
+                    aiTimeout = setTimeout(() => {
+                        // Ensure we are not typing
+                        triggerAiCompletion(editor, true);
+                    }, 2000); // 2 seconds debounce
+                }
+            },
+            editorProps: {
+                handleKeyDown: (view, event) => {
+                    const { state, dispatch } = view;
+
+                    // Tab to Accept
+                    if (event.key === 'Tab' && ghostRange) {
+                        event.preventDefault();
+                        // Remove ghost mark from range
+                        const tr = state.tr.removeMark(ghostRange.from, ghostRange.to, state.schema.marks.ghost);
+                        // Move cursor to end
+                        tr.setSelection(state.selection.constructor.near(tr.doc.resolve(ghostRange.to)));
+                        dispatch(tr);
+                        ghostRange = null; // Clear
+                        return true;
+                    }
+
+                    // Any other key (except some modifiers?) -> Dismiss ghost text
+                    if (ghostRange && !['Shift', 'Control', 'Alt', 'Meta', 'CapsLock'].includes(event.key)) {
+                        // If we are typing, we delete the ghost text first
+                        // But wait, if we delete, we consume the event?
+                        // No, we want to delete ghost text AND let the keypress happen.
+
+                        // Delete ghost range
+                        const tr = state.tr.delete(ghostRange.from, ghostRange.to);
+                        dispatch(tr);
+                        ghostRange = null;
+
+                        // Return false so the key press is handled normally (typing the new char)
+                        return false;
+                    }
+
+                    return false;
+                }
+            }
+        });
+
+        // Initialize Menu Bar
+        initMenuBar(editor);
+
+        const deleteBtn = document.getElementById('deleteNoteBtn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', window.deleteNote);
+        }
+
+        // Load existing tags
+        try {
+            const tagsData = JSON.parse(document.getElementById('note-tags-data').textContent);
+            if (Array.isArray(tagsData)) {
+                tagsData.forEach(tag => renderTag(tag));
+            }
+        } catch (e) {
+            console.error("Error loading tags:", e);
+        }
+    });
+
+    // --- Menu Bar Logic ---
+    function initMenuBar(editor) {
+        const buttons = document.querySelectorAll('.menu-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const command = btn.dataset.command;
+                const level = btn.dataset.level ? parseInt(btn.dataset.level) : null;
+
+                if (command === 'toggleHeading') {
+                    editor.chain().focus().toggleHeading({ level: level }).run();
+                } else if (!command) {
+                    return;
+                } else {
+                    if (editor.chain().focus()[command]) {
+                        editor.chain().focus()[command]().run();
+                    }
+                }
+            });
+        });
+    }
+
+    function updateMenuBar(editor) {
+        // ... (keep existing)
+        const buttons = document.querySelectorAll('.menu-btn');
+
+        buttons.forEach(btn => {
+            const command = btn.dataset.command;
+            if (!command) return;
+
+            const level = btn.dataset.level ? parseInt(btn.dataset.level) : null;
+            let isActive = false;
+
+            if (command === 'toggleHeading') {
+                isActive = editor.isActive('heading', { level: level });
+            } else if (command === 'undo' || command === 'redo') {
+                btn.disabled = !editor.can()[command]();
+                btn.style.opacity = btn.disabled ? '0.5' : '1';
+                return;
+            } else {
+                const checkName = command.replace('toggle', '').toLowerCase();
+                const finalName = checkName === 'bulletlist' ? 'bulletList' :
+                    checkName === 'orderedlist' ? 'orderedList' :
+                        checkName === 'blockquote' ? 'blockquote' :
+                            checkName === 'underline' ? 'underline' :
+                                checkName === 'highlight' ? 'highlight' : checkName;
+                isActive = editor.isActive(finalName);
+            }
+
+            if (isActive) {
+                btn.classList.add('is-active');
+            } else {
+                btn.classList.remove('is-active');
+            }
+        });
+    }
+
+    // --- Delete Logic ---
+    window.deleteNote = async function () {
+        if (!confirm('Are you sure you want to delete this note?')) return;
+        try {
+            await fetch("{% url 'delete_note' note.id %}", {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            });
+            window.location.href = "{% url 'dashboard' %}";
+        } catch (e) {
+            console.error(e);
+            alert('Failed to delete note');
+        }
+    }
+
+    // --- Export Logic ---
+    window.toggleExportDropdown = function () {
+        document.getElementById('exportDropdown').classList.toggle('hidden');
+    }
+
+    window.exportTXT = function () {
+        const text = editor.getText();
+        const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "{{ note.title|slugify|default:'note' }}.txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    window.exportPDF = function () {
+        const element = document.getElementById('tiptap-editor');
+        const opt = {
+            margin: 1,
+            filename: "{{ note.title|slugify|default:'note' }}.pdf",
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save();
+    }
+
+    // Close export dropdown on click outside
+    document.addEventListener('click', function (event) {
+        if (aiDropdownBtn && !aiDropdownBtn.contains(event.target) && aiDropdownMenu && !aiDropdownMenu.contains(event.target)) {
+            aiDropdownMenu.classList.add('hidden');
+        }
+
+        const themeBtn = document.querySelector('button[onclick="toggleThemeDropdown()"]');
+        const themeMenu = document.getElementById('themeDropdown');
+        if (themeBtn && themeMenu && !themeBtn.contains(event.target) && !themeMenu.contains(event.target)) {
+            themeMenu.classList.add('hidden');
+        }
+
+        const exportBtn = document.querySelector('button[onclick="toggleExportDropdown()"]');
+        const exportMenu = document.getElementById('exportDropdown');
+        if (exportBtn && exportMenu && !exportBtn.contains(event.target) && !exportMenu.contains(event.target)) {
+            exportMenu.classList.add('hidden');
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>KnowledgeBin</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <!-- Tailwind CSS with Typography Plugin via CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <!-- Google Fonts: Inter & Outfit -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;600;700&display=swap"
+    rel="stylesheet">
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --border-color: #e2e8f0;
+      /* Default Gradient: Violet-Rose Light */
+      --gradient-start: #f8fafc;
+      --gradient-mid: #f3e8ff;
+      --gradient-end: #fff1f2;
+      --color-accent: #16a34a;
+      /* Green-600 */
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #334155;
+      /* Dark Gradient: Slate-Blue */
+      --gradient-start: #0f172a;
+      --gradient-mid: #1e1b4b;
+      --gradient-end: #172554;
+      --color-accent: #22c55e;
+      /* Green-500 */
+    }
+
+    [data-theme="midnight"] {
+      --bg-primary: #000000;
+      --bg-secondary: #111111;
+      --text-primary: #e2e8f0;
+      --text-secondary: #888888;
+      --border-color: #222222;
+      /* Midnight Gradient: Deep Black-Purple */
+      --gradient-start: #000000;
+      --gradient-mid: #1a0b2e;
+      --gradient-end: #000000;
+      --color-accent: #a855f7;
+      /* Purple-500 */
+    }
+
+    [data-theme="sepia"] {
+      --bg-primary: #fdf6e3;
+      --bg-secondary: #eee8d5;
+      --text-primary: #5f4b32;
+      --text-secondary: #93a1a1;
+      --border-color: #d6d6d6;
+      /* Sepia Gradient */
+      --gradient-start: #fdf6e3;
+      --gradient-mid: #fdf6e3;
+      /* Solid for sepia mostly */
+      --gradient-end: #eee8d5;
+      --color-accent: #a05a2c;
+      /* Sienna */
+    }
+
+    .font-heading {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    body {
+      transition: background-color 0.3s, color 0.3s;
+      background-color: var(--bg-primary);
+      /* Fallback */
+      background-image: linear-gradient(to bottom right, var(--gradient-start), var(--gradient-mid), var(--gradient-end));
+      color: var(--text-primary);
+    }
+  </style>
+
+  <script>
+    // Initialize Theme
+    const savedTheme = localStorage.getItem('kb-theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            background: "var(--bg-primary)",
+            surface: "var(--bg-secondary)",
+            foreground: "var(--text-primary)",
+            muted: "var(--text-secondary)",
+            border: "var(--border-color)",
+            accent: "var(--color-accent)",
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            heading: ['Outfit', 'sans-serif'],
+          },
+          typography: {
+            DEFAULT: {
+              css: {
+                '--tw-prose-body': 'var(--text-primary)',
+                '--tw-prose-headings': 'var(--text-primary)',
+                '--tw-prose-lead': 'var(--text-secondary)',
+                '--tw-prose-links': 'var(--color-accent)',
+                '--tw-prose-bold': 'var(--text-primary)',
+                '--tw-prose-counters': 'var(--text-secondary)',
+                '--tw-prose-bullets': 'var(--text-secondary)',
+                '--tw-prose-hr': 'var(--border-color)',
+                '--tw-prose-quotes': 'var(--text-primary)',
+                '--tw-prose-quote-borders': 'var(--border-color)',
+                '--tw-prose-captions': 'var(--text-secondary)',
+                '--tw-prose-code': 'var(--text-primary)',
+                '--tw-prose-pre-code': 'var(--text-primary)',
+                '--tw-prose-pre-bg': 'var(--bg-secondary)',
+                '--tw-prose-th-borders': 'var(--border-color)',
+                '--tw-prose-td-borders': 'var(--border-color)',
+              },
+            },
+          }
+        }
+      }
+    }
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('kb-theme', theme);
+    }
+  </script>
+</head>
+
+<body class="min-h-screen font-sans antialiased grainy font-heading">
+  {% block content %}{% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex min-h-screen items-center justify-center p-4">
+    <div class="w-full max-w-md space-y-8 rounded-xl bg-surface p-10 shadow-xl border border-border">
+        <div class="text-center">
+            <h2 class="mt-6 text-3xl font-bold tracking-tight text-foreground">Join KnowledgeBin</h2>
+            <p class="mt-2 text-sm text-muted">
+                Create an account to start generating ideas
+            </p>
+        </div>
+
+        <form class="mt-8 space-y-6" method="POST" action="">
+            {% csrf_token %}
+
+            {% if form.errors %}
+            <div class="rounded-md bg-red-50 p-4">
+                <div class="flex">
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">There were errors with your submission</h3>
+                        {% if form.non_field_errors %}
+                        <div class="mt-2 text-sm text-red-700">
+                            {{ form.non_field_errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="space-y-4">
+                {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-foreground mb-1">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                    {% if field.help_text %}
+                    <p class="mt-1 text-xs text-muted">{{ field.help_text }}</p>
+                    {% endif %}
+                    {% if field.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ field.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div>
+                <button type="submit"
+                    class="group relative flex w-full justify-center rounded-md bg-accent px-3 py-2 text-sm font-semibold text-white hover:opacity-90 transition-colors">
+                    Sign Up
+                    <svg class="ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path
+                            d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                    </svg>
+                </button>
+            </div>
+        </form>
+
+        <div class="text-center text-sm text-muted">
+            Already have an account?
+            <a href="{% url 'login' %}" class="font-semibold text-accent hover:opacity-80">Log in</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
